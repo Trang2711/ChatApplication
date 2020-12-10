@@ -16,22 +16,30 @@ public class Server {
     private ServerSocket serverSock;
     public Set<RoomChat> roomList = new HashSet<>();
 
-    public Server(int port) throws IOException {
-        this.serverSock = new ServerSocket(port);
+    public Server(int port) {
+        try {
+            this.serverSock = new ServerSocket(port);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            System.out.println("Error when create server socket: " + e.getMessage());
+        }
     }
 
-    public Server() throws IOException {
+    public Server() {
         this(DEFAULT_PORT);
     }
 
-    public void startServer() throws IOException {
-        while (true) {
-            System.out.println("Waiting for client on port " + DEFAULT_PORT + "...");
-            Socket connSock = serverSock.accept();
-
-            SThread newUser = new SThread(this, connSock);
-            newUser.start();
-            System.out.println("Connecting to new client.");
+    public void start(){
+        try {
+            while (true) {
+                System.out.println("Waiting for client on port " + DEFAULT_PORT + "...");
+                Socket connSock = serverSock.accept();
+                SThread newUser = new SThread(this, connSock);
+                newUser.start();
+                System.out.println("Connecting to new client.");            
+            }
+        } catch (IOException e) {
+            System.out.println("Error when accept connect from client: " + e.getMessage());
         }
     }
 
@@ -39,4 +47,22 @@ public class Server {
         return roomList;
     }
 
+    public RoomChat getRoomChat(String roomName) {
+        for (RoomChat roomChat : this.roomList) {
+            if(roomChat.getName() == roomName) return roomChat;
+        }
+        return null;
+    }
+
+    public boolean hasRoomChat(String roomName) {
+        for (RoomChat roomChat : this.roomList) {
+            if(roomChat.getName() == roomName) return true;
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.start();
+    }
 }
