@@ -32,8 +32,8 @@ public class CThread implements Runnable{
             String mess = null;
             mess = mqtt.receiveText();
 //            client.getMain().enableChat();
-            if (mess.equals("210 Create successfully room")) {
-                showAlert("Room create successfully!");
+            if (mess.equals("210 Create room successfully")) {
+                showAlert("Room created successfully!");
                 client.getMain().enableChat();
             } else if (mess.equals("410 Room already exists")) {
                 showAlert("Room already exists!");

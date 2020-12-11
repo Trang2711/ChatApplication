@@ -114,6 +114,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
+        this.client.sendMessage("@quit@");
         this.client.close();
         System.out.println("App closed");
         super.stop();
