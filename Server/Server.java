@@ -49,14 +49,14 @@ public class Server {
 
     public RoomChat getRoomChat(String roomName) {
         for (RoomChat roomChat : this.roomList) {
-            if(roomChat.getName() == roomName) return roomChat;
+            if(roomChat.getName().equals(roomName)) return roomChat;
         }
         return null;
     }
 
     public boolean hasRoomChat(String roomName) {
         for (RoomChat roomChat : this.roomList) {
-            if(roomChat.getName() == roomName) return true;
+            if(roomChat.getName().equals(roomName)) return true;
         }
         return false;
     }
