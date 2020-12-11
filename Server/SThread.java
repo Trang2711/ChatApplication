@@ -44,7 +44,8 @@ public class SThread extends Thread {
      * @return true if user in room else return false
      */
     boolean authentication(String roomName) {
-        if(this.server.hasRoomChat(roomName)) return true;
+        if (this.server.hasRoomChat(roomName))
+            return true;
         return false;
     }
 
@@ -100,21 +101,23 @@ public class SThread extends Thread {
 
     @Override
     public void run() {
-        //receive client's username to login app
-        if(mqtt.receiveText() == "Username"){
+        // receive client's username to login app
+        if (mqtt.receiveText().equals("Username")) {
             mqtt.sendText("200 OK");
             this.username = mqtt.receiveText();
+            System.out.println(this.username);
         }
 
-        //reveive client's request
+        // reveive client's request
         int status = LOGIN_ROOM;
-        do{
+        do {
             String message = mqtt.receiveText();
-            
-            //check user quit app
-            if(message == "@quit@"){
+
+            // check user quit app
+            if (message.equals("@quit@")) {
                 try {
-                    socket.close();
+                    mqtt.close();
+                    // socket.close();
                 } catch (IOException e) {
                     System.out.println("Error when close socket in Sthread: " + e.getMessage());
                     e.printStackTrace();
@@ -123,37 +126,43 @@ public class SThread extends Thread {
 
             switch (status) {
                 case LOGIN_ROOM:
-                    if(message == "CreateRoom"){
-                        mqtt.sendText("200 OK");
+                    if (message.equals("CreateRoom")) {
+                        // mqtt.sendText("200 OK");
                         this.roomName = mqtt.receiveText();
-                        mqtt.sendText("210 OK room name");
-                        if(this.server.hasRoomChat(roomName)){
+                        // mqtt.sendText("210 OK room name");
+                        if (this.server.hasRoomChat(roomName)) {
                             mqtt.sendText("410 Room already exists");
+                            System.out.println("Room already exists");
                         } else {
                             this.roomChat = createRoomChat(this.roomName);
-                            mqtt.sendText("210 Create successfully room");
+                            this.roomChat.addUser(this);
+                            
+                            mqtt.sendText("210 Create room successfully");
+                            System.out.println("Create room successfully");
                             status = CHAT;
                         }
-                    }
-                    else if(message == "JoinRoom"){
-                            mqtt.sendText("200 OK");
-                            String roomName = mqtt.receiveText();
-                            if(authentication(roomName)){
-                                this.roomChat = server.getRoomChat(roomName);
-                                this.roomChat.addUser(this);
-                                this.roomName = roomName;
-                                mqtt.sendText("210 OK room");
-                                status = CHAT;
-                            } else {
-                                mqtt.sendText("400 Not Found");
-                            }  
+                    } else if (message.equals("JoinRoom")) {
+                        // mqtt.sendText("200 OK");
+                        String roomName = mqtt.receiveText();
+                        if (authentication(roomName)) {
+                            this.roomChat = server.getRoomChat(roomName);
+                            this.roomChat.addUser(this);
+                            this.roomName = roomName;
+                            mqtt.sendText("210 OK room");
+                            System.out.println("Join room OK");
+                            status = CHAT;
+                        } else {
+                            mqtt.sendText("404 Not Found");
+                            System.out.println("Room not found");
                         }
-                    break;
+                    }
                 case CHAT:
-                        chatInRoom();
-                        status = LOGIN_ROOM;
+                    System.out.println("it got here");
+                    // System.out.println(status + "");
+                    chatInRoom();
+                    status = LOGIN_ROOM;
                     break;
             }
-        } while(true);
+        } while (true);
     }
 }

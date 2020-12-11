@@ -1,0 +1,17 @@
+#buttonCreate {
+    -fx-background-color: white;
+    -fx-text-fill:#7a7a7a;
+}
+
+#buttonCreate:hover {
+    -fx-background-color: #dcdcdc;
+}
+
+.textInput {
+    -fx-border-radius: 15px;
+    -fx-padding: 0 15 0 15;
+    -fx-border-color: grey;
+    -fx-border-width: 2;
+    -fx-background-color:  -fx-control-inner-background;
+    -fx-background-color: none;
+}

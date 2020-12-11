@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="705.0" prefWidth="1164.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="705.0" prefWidth="380.0" />
+      <VBox prefHeight="705.0" prefWidth="891.0">
+         <children>
+            <ScrollPane prefHeight="610.0" prefWidth="838.0">
+               <content>
+                  <TextArea prefHeight="488.0" prefWidth="836.0" />
+               </content></ScrollPane>
+            <Label prefHeight="39.0" prefWidth="184.0" style="-fx-background-color: red;" text="Label" />
+         </children>
+      </VBox>
+   </children>
+</HBox>

@@ -1,11 +1,6 @@
-package Protocol;
+package application.protocol;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class MQTT {
@@ -23,7 +18,6 @@ public class MQTT {
         try {
             this.dataOutputStream.writeUTF(mess);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -32,18 +26,8 @@ public class MQTT {
         String mess = "";
         try {
             mess = dataInputStream.readUTF();
-        } catch (EOFException e) {
-            try {
-                dataInputStream.close();
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                System.out.println("Close connection");
-                e1.printStackTrace();
-            }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            
         }
         return mess;
     }
@@ -53,11 +37,11 @@ public class MQTT {
     }
 
     public void receiveFile(String filePath) {
-        
+
     }
 
     public void close() throws IOException {
-        sendText("@quit@");
+//        sendText("@quit@");
         this.dataInputStream.close();
         this.dataOutputStream.close();
 //        this.fileInputStream.close();
