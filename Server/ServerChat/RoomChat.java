@@ -1,30 +1,30 @@
-package Server;
+package Server.ServerChat;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import Protocol.Message;
 
 public class RoomChat implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String name;
     private Set<String> usersOnline = new HashSet<>();
-    private Set<SThread> userThreads = new HashSet<>();
-    String logRoomPath;
+    private Set<ServerThread> userThreads = new HashSet<>();
 
     public RoomChat(String roomName) {
         this.name = roomName;
-        this.logRoomPath = Server.FOLDER_PATH + roomName + ".txt";
     }
 
-    void addUser(SThread userThread) {
+    void addUser(ServerThread userThread) {
         boolean added = usersOnline.add(userThread.getUsername());
         if(added){
             userThreads.add(userThread);
         }
     }
 
-    void removeUserThread(SThread userThread) {
+    void removeUserThread(ServerThread userThread) {
         boolean removed = usersOnline.remove(userThread.getUsername());
         if (removed) {
             userThreads.remove(userThread);
@@ -54,10 +54,10 @@ public class RoomChat implements Serializable {
         return true;
     }
 
-    void broadcast(String message, SThread currentUser) {
-        for (SThread user : userThreads) {
+    void broadcast(Message message, ServerThread currentUser) {
+        for (ServerThread user : userThreads) {
             if (user != currentUser) {
-                user.sendText(message);
+                user.sendMessage(message);
             }
         }
     }

@@ -1,31 +1,35 @@
-package Server;
+package Server.ServerChat;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Server {
+import Server.ServerFile.ServerFile;
+
+public class ServerChat {
     private static int DEFAULT_PORT = 9000;
     static final String FOLDER_PATH = "Server/database/";
 
+    public ServerFile serverFile;
+
     private ServerSocket serverSock;
+    
     public Set<RoomChat> roomList = new HashSet<>();
 
-    public Server(int port) {
+    public ServerChat(int defaultPort) {
         try {
-            this.serverSock = new ServerSocket(port);
+            this.serverSock = new ServerSocket(defaultPort);
+            this.serverFile = new ServerFile(this);
+            this.serverFile.start();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             System.out.println("Error when create server socket: " + e.getMessage());
         }
     }
 
-    public Server() {
+    public ServerChat() {
         this(DEFAULT_PORT);
     }
 
@@ -33,10 +37,10 @@ public class Server {
         try {
             while (true) {
                 System.out.println("Waiting for client on port " + DEFAULT_PORT + "...");
-                Socket connSock = serverSock.accept();
-                SThread newUser = new SThread(this, connSock);
+                Socket connSock = this.serverSock.accept();
+                ServerThread newUser = new ServerThread(this, connSock);
                 newUser.start();
-                System.out.println("Connecting to new client.");            
+                System.out.println("Waiting for new client...");            
             }
         } catch (IOException e) {
             System.out.println("Error when accept connect from client: " + e.getMessage());
@@ -62,7 +66,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        Server server = new Server();
+        ServerChat server = new ServerChat();
         server.start();
     }
 }
