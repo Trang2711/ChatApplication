@@ -2,6 +2,7 @@ package Server.ServerFile;
 
 import java.io.EOFException;
 import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
 
 import Protocol.MQTT;
@@ -9,50 +10,21 @@ import Protocol.Message;
 
 public class ServerFileThread extends Thread {
 
-    private ServerFile server;
-    // private final Socket socket;
     private MQTT mqtt;
-    private String userName;
+    private Socket socket;
 
-    public ServerFileThread(Socket socket, ServerFile server) {
+    public ServerFileThread(Socket socket) {
         this.mqtt = new MQTT(socket);
-        this.server = server;
+        this.socket = socket;
     }
 
-    public void sendFile(String filePath) {
-        mqtt.sendFile(filePath);
-    }
+    // public void sendFile(String filePath) {
+    //     mqtt.sendFile(filePath);
+    // }
 
-    public void receiveFile(String filePath, long fileSize) {
-        mqtt.receiveFile(filePath, fileSize);
-    }
-
-    boolean authentication(String roomName) {
-        if (this.server.serverChat.hasRoomChat(roomName))
-            return true;
-        return false;
-    }
-
-    public String createFilePath(String roomName, String fileName) {
-        int copy = 0;
-        String filePath = null;
-        do {
-            if (copy == 0) {
-                filePath = ServerFile.FOLDER_PATH + roomName + "_" + this.userName + "_" + fileName;
-            } else {
-                filePath = ServerFile.FOLDER_PATH + roomName + "_" + this.userName + "_(" + String.valueOf(copy) + ")"
-                        + fileName;
-            }
-
-            if (hasFile(filePath)) {
-                copy++;
-            } else {
-                break;
-            }
-        } while (true);
-
-        return filePath;
-    }
+    // public void receiveFile(String filePath, long fileSize) {
+    //     mqtt.receiveFile(filePath, fileSize);
+    // }
 
     public boolean hasFile(String filePath) {
         File f = new File(filePath);
@@ -70,13 +42,6 @@ public class ServerFileThread extends Thread {
     public void run() {
 
         try {
-            this.userName = mqtt.receiveMess().getContent();
-            String roomName = mqtt.receiveMess().getContent();
-
-            if (!authentication(roomName)) {
-                mqtt.sendMess(new Message("t", "404 Not found room chat"));
-                return;
-            }
             
             Message message = mqtt.receiveMess();
             System.out.println(message.getContent());
@@ -86,29 +51,33 @@ public class ServerFileThread extends Thread {
     
                     mqtt.sendMess(new Message("t", "200 OK Upload"));
         
-                    String fileName = mqtt.receiveMess().getContent();
-                    mqtt.sendMess(new Message("t", "210 OK File name"));
+                    String filePath = mqtt.receiveMess().getContent();
                     long fileSize = Long.parseLong(mqtt.receiveMess().getContent());
-                    mqtt.sendMess(new Message("t", "210 OK File size"));
-        
-                    String filePath = createFilePath(roomName, fileName);
-                    mqtt.receiveFile(filePath, fileSize);
+
+                    if(mqtt.receiveFile(filePath, fileSize) == 1) {
+                        mqtt.sendMess(new Message("t", "210 Upload Completed"));
+                    } else {
+                        mqtt.sendMess(new Message("t", "410 Upload failed"));
+                    }
+                    
         
                 } else if (message.equals("DOWNLOAD")) {
         
                     mqtt.sendMess(new Message("t", "200 OK Download"));
         
-                    String fileName = mqtt.receiveMess().getContent();
-                    mqtt.sendMess(new Message("t", "210 OK File name"));
-        
-                    String filePath = createFilePath(roomName, fileName);
+                    String filePath = mqtt.receiveMess().getContent();
         
                     if(hasFile(filePath)) {
         
                         long fileSize = getFileSize(filePath);
                         this.mqtt.sendMess(new Message("t", String.valueOf(fileSize)));
             
-                        mqtt.sendFile(filePath);
+                        if (mqtt.sendFile(filePath) == 1) {
+                            mqtt.sendMess(new Message("t", "210 Download Completed"));
+                        } else {
+                            mqtt.sendMess(new Message("t", "410 Download failed"));
+                        }
+
                     } else {
                         this.mqtt.sendMess(new Message("t", "404 Not found"));
                     }
@@ -118,6 +87,12 @@ public class ServerFileThread extends Thread {
         } catch(EOFException e){
             // TODO Auto-generated catch block
             e.printStackTrace();
+            try {
+				this.socket.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
     }
 

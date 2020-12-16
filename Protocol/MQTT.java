@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 
 public class MQTT {
@@ -32,17 +31,6 @@ public class MQTT {
         }
     }
 
-    public MQTT(int port) {
-        try {
-            Socket socket = new Socket(InetAddress.getLocalHost(), port);
-            this.dataInputStream = new DataInputStream(socket.getInputStream());
-            this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
     public void sendMess(Message mess) {
         try {
             this.dataOutputStream.writeUTF(mess.getMessage());
@@ -52,47 +40,23 @@ public class MQTT {
         }
     }
 
-    public Message receiveMess() throws EOFException {
+    public Message receiveMess() throws EOFException{
         String mess = "";
         try {
             mess = dataInputStream.readUTF();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            System.out.println("ERROR when receive Text: " + e.getMessage());
             e.printStackTrace();
         }
         return new Message(mess);
     }
-
-    public Socket connectWithServer(InetAddress hostname, int port) {
-        Socket socket = null;
-        try {
-            socket = new Socket(hostname, port);
-            System.out.println("Connected to the server in port " + port);
-            return socket;
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return socket;
-    }
-
-    public void closeConnectWithServer(Socket socket) {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
     
-    public void sendFile(String filePath) {
+    public int sendFile(String filePath) {
 
         File file = new File(filePath);
         if (!file.isFile()){
             System.out.println("File is not exist");
-            return;
+            return -1;
         }
         long fileSize = (int) file.length();
 
@@ -117,6 +81,7 @@ public class MQTT {
             }
             System.out.println("Done!");
             inputStream.close();
+            return 1;
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -124,10 +89,10 @@ public class MQTT {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } 
-
+        return -1;
     }
 
-    public void receiveFile(String filePath, long fileSize) {
+    public int receiveFile(String filePath, long fileSize) {
         long dataRead = 0;
         long dataLeft = 0;
 
@@ -147,6 +112,7 @@ public class MQTT {
             }
             System.out.println("Download complete!");
             outputStream.close();
+            return 1;
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -154,6 +120,8 @@ public class MQTT {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } 
+
+        return -1;
     }
 
 }

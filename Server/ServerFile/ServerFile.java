@@ -4,20 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import Server.ServerChat.ServerChat;
-
-public class ServerFile {
+public class ServerFile extends Thread{
     
     private static int DEFAULT_PORT = 8000;
-    static final String FOLDER_PATH = "./Server/database/";
-
     private ServerSocket serverSock;
-    public ServerChat serverChat;
 
-    public ServerFile(ServerChat serverChat) {
+    public ServerFile() {
         try {
             this.serverSock = new ServerSocket(DEFAULT_PORT);
-            this.serverChat = serverChat;
         } catch (IOException e) {
             // TODO Auto-generated catch block
             System.out.println("Error when create server file socket: " + e.getMessage());
@@ -29,12 +23,17 @@ public class ServerFile {
             while (true) {
                 System.out.println("Waiting for client on port " + DEFAULT_PORT + "...");
                 Socket connSock = this.serverSock.accept();
-                ServerFileThread newUser = new ServerFileThread(connSock, this);
+                ServerFileThread newUser = new ServerFileThread(connSock);
                 newUser.start();
-                System.out.println("Connecting to new client.");            
+                System.out.println("Waiting for new client on port 8000...");            
             }
         } catch (IOException e) {
             System.out.println("Error when accept connect from client: " + e.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+        ServerFile serverFile = new ServerFile();
+        serverFile.start();
     }
 }

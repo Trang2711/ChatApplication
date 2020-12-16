@@ -21,8 +21,8 @@ public class Client {
  
     public void execute() {
         try {
-            Socket socket = new Socket(hostname, port);
-            System.out.println("Connected to the server");
+            // Socket socket = new Socket(hostname, port);
+            // System.out.println("Connected to the server");
  
             // Console console = System.console();
             // String userName = console.readLine("\nEnter your name: ");

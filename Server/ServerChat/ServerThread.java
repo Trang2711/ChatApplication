@@ -1,6 +1,7 @@
 package Server.ServerChat;
 
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -74,6 +75,34 @@ public class ServerThread extends Thread {
         roomChat.broadcast(new Message("t", serverMessage), this);
     }
 
+    public boolean hasFile(String filePath) {
+        File f = new File(filePath);
+        if (f.isFile())
+            return true;
+        return false;
+    }
+
+    public String createFilePath(String fileName) {
+        int copy = 0;
+        String filePath = null;
+        do {
+            if (copy == 0) {
+                filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_" + fileName;
+            } else {
+                filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_(" + String.valueOf(copy) + ")"
+                        + fileName;
+            }
+
+            if (hasFile(filePath)) {
+                copy++;
+            } else {
+                break;
+            }
+        } while (true);
+
+        return filePath;
+    }
+
     /**
      * @return 1 if user end a conversation return -1 if user close app
      */
@@ -89,6 +118,29 @@ public class ServerThread extends Thread {
         do {
             try {
                 clientMessage = mqtt.receiveMess();
+                if (clientMessage.getHeader().equals("c")) {
+                    if(clientMessage.getContent().equals("@quit@")){
+                        try {
+                            socket.close();
+                            leftRoomChat();
+                            System.out.println(username + " has quitted the app");
+                        } catch (IOException e) {
+                            System.out.println("Error when close socket in ServerThread: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                        return -1;
+                    } else if (clientMessage.getContent().equals("File")) {
+                        String fileName = mqtt.receiveMess().getContent();
+                        String filePath = createFilePath(fileName);
+                        mqtt.sendMess(new Message("f", filePath));
+                    }
+                    
+                } else if(clientMessage.getHeader().equals("t") || clientMessage.getHeader().equals("f")){
+                    System.out.println(clientMessage.getContent());
+                    serverMessage = username + ": " + clientMessage.getContent();
+                    roomChat.broadcast(new Message(clientMessage.getHeader(), serverMessage), this);
+                }
+    
             } catch (EOFException e1) {
                 try {
                     socket.close();
@@ -100,23 +152,8 @@ public class ServerThread extends Thread {
                 e1.printStackTrace();
             }
 
-            if (clientMessage.getHeader() == "t" && clientMessage.getContent().equals("@quit@")) {
-                try {
-                    socket.close();
-                    leftRoomChat();
-                    System.out.println(username + " has quitted the app");
-                } catch (IOException e) {
-                    System.out.println("Error when close socket in ServerThread: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                return -1;
-            } else {
-                System.out.println(clientMessage.getContent());
-                serverMessage = username + ": " + clientMessage;
-                roomChat.broadcast(new Message(clientMessage.getHeader(), serverMessage), this);
-            }
-
-        } while (!clientMessage.getContent().equals("bye"));
+           
+        } while (!(clientMessage.getContent().equals("@bye@") && clientMessage.getHeader().equals("c")));
 
         // notify the clients that 1 user has just left
         leftRoomChat();
@@ -139,7 +176,7 @@ public class ServerThread extends Thread {
                 System.out.println(message.getContent());
 
                 // check user quit app
-                if (message.getHeader() == "t" && message.getContent().equals("@quit@")) {
+                if (message.getHeader().equals("c") && message.getContent().equals("@quit@")) {
                     try {
                         socket.close();
                         if (roomChat != null) {
@@ -155,13 +192,16 @@ public class ServerThread extends Thread {
 
                 if (status == LOGIN_APP) {
                     // receive client's username to login app
-                    if (message.getHeader() == "c" && message.getContent().equals("Username")) {
+                    if (message.getHeader().equals("c") && message.getContent().equals("UserName")) {
 
                         mqtt.sendMess(new Message("t", "200 OK"));
 
                         Message mess = mqtt.receiveMess();
-                        if (mess.getHeader() == "t") {
+                        if (mess.getHeader().equals("t")) {
                             this.username = mess.getContent();
+                            mqtt.sendMess(new Message("t", "210 OK"));
+                        } else {
+                            mqtt.sendMess(new Message("t", "400 Bad request"));
                         }
                         System.out.println(this.username);
 
@@ -171,14 +211,14 @@ public class ServerThread extends Thread {
                 }
 
                 if (status == LOGIN_ROOM) {
-                    if (message.getHeader() == "c") {
+                    if (message.getHeader().equals("c")) {
                         if (message.getContent().equals("CreateRoom")) {
 
                             this.roomName = mqtt.receiveMess().getContent();
 
                             if (this.server.hasRoomChat(roomName)) {
 
-                                mqtt.sendMess(new Message("t", "410 Room already exists"));
+                                mqtt.sendMess(new Message("t", "400 Bad request"));
                                 System.out.println("Room already exists");
 
                             } else {
@@ -186,7 +226,7 @@ public class ServerThread extends Thread {
                                 this.roomChat = createRoomChat(this.roomName);
                                 this.roomChat.addUser(this);
 
-                                mqtt.sendMess(new Message("t", "210 Create room successfully"));
+                                mqtt.sendMess(new Message("t", "210 OK created"));
                                 System.out.println("Create room successfully");
 
                                 status = CHAT;
@@ -201,14 +241,14 @@ public class ServerThread extends Thread {
                                 this.roomChat.addUser(this);
                                 this.roomName = roomName;
 
-                                mqtt.sendMess(new Message("t", "210 OK room"));
-                                System.out.println("Join room OK");
+                                mqtt.sendMess(new Message("t", "210 OK joined"));
+                                System.out.println("Join room success");
 
                                 status = CHAT;
 
                             } else {
 
-                                mqtt.sendMess(new Message("t", "404 Not Found"));
+                                mqtt.sendMess(new Message("t", "410 Not Found"));
                                 System.out.println("Room not found");
 
                             }
@@ -219,7 +259,6 @@ public class ServerThread extends Thread {
 
                 if (status == CHAT) {
 
-                    System.out.println("it got here");
                     if (chatInRoom() == -1)
                         break;
 
