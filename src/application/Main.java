@@ -1,6 +1,7 @@
 package application;
 
 import application.client.Client;
+import application.protocol.Message;
 import application.view.LoginController;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -94,12 +95,12 @@ public class Main extends Application {
                 if (!inputField.getText().trim().isEmpty()) {
                     if (create) {
                         System.out.println("Create");
-                        client.sendMessage("CreateRoom");
-                        client.sendMessage(inputField.getText().trim());
+                        client.sendMessage(new Message("c", "CreateRoom"));
+                        client.sendMessage(new Message("t", inputField.getText().trim()));
                     } else {
                         System.out.println("Join");
-                        client.sendMessage("JoinRoom");
-                        client.sendMessage(inputField.getText().trim());
+                        client.sendMessage(new Message("c", "JoinRoom"));
+                        client.sendMessage(new Message("t", inputField.getText().trim()));
                     }
                 }
             }
@@ -114,7 +115,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        this.client.sendMessage("@quit@");
+        this.client.sendMessage(new Message("c", "@quit@"));
         this.client.close();
         System.out.println("App closed");
         super.stop();

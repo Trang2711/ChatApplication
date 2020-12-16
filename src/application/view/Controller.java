@@ -1,6 +1,7 @@
 package application.view;
 
 import application.Main;
+import application.protocol.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,7 +26,7 @@ public class Controller {
     public void sendMessage(ActionEvent ae) {
         System.out.println("You: " + textField.getText());
         appendChat("\nYou: " + textField.getText(), false);
-        this.main.getClient().sendMessage(textField.getText());
+        this.main.getClient().sendMessage(new Message("t", textField.getText()));
         textField.setText("");
 //        textChat.setText(textField.getText());
 //        client.hello();
@@ -52,8 +53,8 @@ public class Controller {
     }
 
     public void init() {
-        this.textChat.setVisible(false);
-        this.textField.setDisable(true);
+//        this.textChat.setVisible(false);
+//        this.textField.setDisable(true);
     }
 
     public void setMain(Main main) {
