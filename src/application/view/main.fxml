@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="582.0"
+      prefWidth="796.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="application.view.Controller">
+   <children>
+      <MenuBar>
+         <menus>
+            <Menu mnemonicParsing="false" text="Room">
+               <items>
+                  <MenuItem fx:id="buttonCreate" mnemonicParsing="false" onAction="#createRoom" text="New"/>
+                  <MenuItem fx:id="buttonJoin" mnemonicParsing="false" onAction="#joinRoom" text="Open…"/>
+                  <MenuItem fx:id="upload" mnemonicParsing="false" onAction="#sendFile" text="Upload File"/>
+                  <Menu mnemonicParsing="false" text="Open Recent"/>
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Close"/>
+                  <MenuItem mnemonicParsing="false" text="Save"/>
+                  <MenuItem mnemonicParsing="false" text="Revert"/>
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Preferences…"/>
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Quit"/>
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Game">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Undo"/>
+                  <MenuItem mnemonicParsing="false" text="Redo"/>
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Cut"/>
+                  <MenuItem mnemonicParsing="false" text="Copy"/>
+                  <MenuItem mnemonicParsing="false" text="Paste"/>
+                  <MenuItem mnemonicParsing="false" text="Delete"/>
+                  <SeparatorMenuItem mnemonicParsing="false"/>
+                  <MenuItem mnemonicParsing="false" text="Select All"/>
+                  <MenuItem mnemonicParsing="false" text="Unselect All"/>
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="553.0"
+            prefWidth="795.0">
+         <children>
+            <AnchorPane prefHeight="557.0" prefWidth="287.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#494ecc" height="553.0" stroke="BLACK"
+                             strokeType="INSIDE" width="250.0">
+                     <effect>
+                        <Bloom/>
+                     </effect>
+                  </Rectangle>
+               </children>
+            </AnchorPane>
+            <VBox prefHeight="553.0" prefWidth="583.0">
+               <children>
+                  <ScrollPane fx:id="chatContainer" prefHeight="482.0" prefWidth="511.0">
+                     <content>
+                        <VBox fx:id="textChat" prefWidth="511.0"/>
+                     </content>
+                  </ScrollPane>
+                  <AnchorPane prefHeight="75.0" prefWidth="511.0">
+                     <children>
+                        <TextField fx:id="textField" layoutX="21.0" layoutY="15.0" onAction="#sendMessage"
+                                   prefHeight="44.0" prefWidth="504.0" promptText="Aa" styleClass="textInput"
+                                   stylesheets="@style.css">
+                           <font>
+                              <Font name="Ubuntu" size="17.0"/>
+                           </font>
+                        </TextField>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>
