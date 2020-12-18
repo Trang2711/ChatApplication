@@ -82,26 +82,26 @@ public class ServerThread extends Thread {
         return false;
     }
 
-    public String createFilePath(String fileName) {
-        int copy = 0;
-        String filePath = null;
-        do {
-            if (copy == 0) {
-                filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_" + fileName;
-            } else {
-                filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_(" + String.valueOf(copy) + ")"
-                        + fileName;
-            }
+    // public String createFilePath(String fileName) {
+    //     int copy = 0;
+    //     String filePath = null;
+    //     do {
+    //         if (copy == 0) {
+    //             filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_" + fileName;
+    //         } else {
+    //             filePath = ServerChat.FOLDER_PATH + this.roomName + "_" + this.getUsername() + "_(" + String.valueOf(copy) + ")"
+    //                     + fileName;
+    //         }
 
-            if (hasFile(filePath)) {
-                copy++;
-            } else {
-                break;
-            }
-        } while (true);
+    //         if (hasFile(filePath)) {
+    //             copy++;
+    //         } else {
+    //             break;
+    //         }
+    //     } while (true);
 
-        return filePath;
-    }
+    //     return filePath;
+    // }
 
     /**
      * @return 1 if user end a conversation return -1 if user close app
@@ -129,11 +129,12 @@ public class ServerThread extends Thread {
                             e.printStackTrace();
                         }
                         return -1;
-                    } else if (clientMessage.getContent().equals("File")) {
-                        String fileName = mqtt.receiveMess().getContent();
-                        String filePath = createFilePath(fileName);
-                        mqtt.sendMess(new Message("f", filePath));
-                    }
+                    } 
+                    // else if (clientMessage.getContent().equals("File")) {
+                    //     String fileName = mqtt.receiveMess().getContent();
+                    //     String filePath = createFilePath(fileName);
+                    //     mqtt.sendMess(new Message("f", filePath));
+                    // }
                     
                 } else if(clientMessage.getHeader().equals("t") || clientMessage.getHeader().equals("f")){
                     System.out.println(clientMessage.getContent());

@@ -61,18 +61,23 @@ public class ServerFileThread extends Thread {
                     }
                     
         
-                } else if (message.equals("DOWNLOAD")) {
+                } else if (message.getContent().equals("DOWNLOAD")) {
         
                     mqtt.sendMess(new Message("t", "200 OK Download"));
         
-                    String filePath = mqtt.receiveMess().getContent();
+                    String mess = mqtt.receiveMess().getContent();
+                    String[] arr = mess.split("@.@");
+                    String fileName = arr[0];
+                    String id = arr[1];
         
-                    if(hasFile(filePath)) {
+                    if(hasFile(id)) {
+
+                        this.mqtt.sendMess(new Message("t", fileName));
         
-                        long fileSize = getFileSize(filePath);
+                        long fileSize = getFileSize(id);
                         this.mqtt.sendMess(new Message("t", String.valueOf(fileSize)));
             
-                        if (mqtt.sendFile(filePath) == 1) {
+                        if (mqtt.sendFile(id) == 1) {
                             mqtt.sendMess(new Message("t", "210 Download Completed"));
                         } else {
                             mqtt.sendMess(new Message("t", "410 Download failed"));
