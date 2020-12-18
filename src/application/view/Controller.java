@@ -52,7 +52,7 @@ public class Controller {
 //            System.out.println(file.getPath());
             this.main.getClient().sendFile(file);
             appendFile("\nYou: " + file.getName(), true);
-            this.main.getClient().sendMessage(new Message("f", this.main.getClient().getName() + ": " + file.getName()));
+            this.main.getClient().sendMessage(new Message("f", file.getName()));
         }
     }
 
@@ -106,6 +106,7 @@ public class Controller {
     }
 
     public void appendFile(String fileName, boolean doesUserSend) {
+        System.out.println("Head of appendFile");
         String sender = getSender(fileName);
 
         Label label = new Label(getContent(fileName));
@@ -139,12 +140,15 @@ public class Controller {
             senderName.getChildren().add(new Label(sender));
             this.textChat.getChildren().add(senderName);
         }
-        label.setOnMouseClicked(mouseEvent -> {
-            getFile(label.getText());
-        });
+        System.out.println("Bottom of appendFile");
         this.textChat.getChildren().add(hBox);
         this.chatContainer.vvalueProperty().bind(this.textChat.heightProperty());
         this.curSender = sender;
+        System.out.println("Done appendFile");
+        label.setOnMouseClicked(mouseEvent -> {
+            getFile(label.getText());
+        });
+
     }
 
     public void getFile(String fileName) {

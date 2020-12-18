@@ -151,7 +151,7 @@ public class CThread implements Runnable{
 //                    String fileName = tmp[1];
 //                    System.out.println("Owner: " + owner);
 //                    System.out.println("File name: " + fileName);
-                    this.client.getMain().appendFile(mess.getContent(), false);
+                    appendFile(mess);
                 }
 
             }
@@ -177,6 +177,15 @@ public class CThread implements Runnable{
             @Override
             public void run() {
                 client.getMain().appendChat(mess, false);
+            }
+        });
+    }
+
+    public void appendFile(Message mess) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                client.getMain().appendFile(mess.getContent(), false);
             }
         });
     }
