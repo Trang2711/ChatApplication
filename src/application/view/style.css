@@ -15,3 +15,37 @@
     -fx-background-color:  -fx-control-inner-background;
     -fx-background-color: none;
 }
+
+.chatBubbleCurLeft {
+    -fx-background-radius: 4px 23px 23px 4px;
+    -fx-padding: 15 15 15 15;
+    -fx-background-color: #E5E5EA;
+    -fx-background-insets: 1px;
+    -fx-font-size: 17px;
+}
+
+.chatBubbleCurRight {
+    -fx-background-radius: 23px 4px 4px 23px;
+    -fx-padding: 15 15 15 15;
+    -fx-background-color: #494ecc;
+    -fx-text-fill:#ffffff;
+    -fx-background-insets: 1px;
+    -fx-font-size: 17px;
+}
+
+.chatBubbleNewLeft {
+    -fx-background-radius: 23px 23px 23px 4px;
+    -fx-padding: 15 15 15 15;
+    -fx-background-color: #E5E5EA;
+    -fx-background-insets: 1px;
+    -fx-font-size: 17px;
+}
+
+.chatBubbleNewRight {
+    -fx-background-radius: 23px 23px 4px 23px;
+    -fx-padding: 15 15 15 15;
+    -fx-background-color: #494ecc;
+    -fx-text-fill:#ffffff;
+    -fx-background-insets: 1px;
+    -fx-font-size: 17px;
+}

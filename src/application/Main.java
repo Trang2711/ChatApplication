@@ -39,17 +39,24 @@ public class Main extends Application {
 
     public void changeChatScene() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/sample.fxml"));
+        loader.setLocation(Main.class.getResource("view/main.fxml"));
         Parent root = loader.load();
         this.controller = (Controller) loader.getController();
         this.controller.init();
         this.controller.setMain(this);
         System.out.println(controller.name);
-        this.primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(String.valueOf(Main.class.getResource("view/style.css")));
+        this.primaryStage.setScene(scene);
     }
 
     public void appendChat(String mess, boolean doesUserSend) {
         this.controller.appendChat(mess, doesUserSend);
+//        this.controller.appendFile(mess, doesUserSend);
+    }
+
+    public void appendFile(String fileName, boolean doesUserSend) {
+        this.controller.appendFile(fileName, doesUserSend);
     }
 
     public void initClient(int port, String userName) {
@@ -119,6 +126,10 @@ public class Main extends Application {
         this.client.close();
         System.out.println("App closed");
         super.stop();
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     public Client getClient() {

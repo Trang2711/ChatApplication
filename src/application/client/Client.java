@@ -3,13 +3,14 @@ package application.client;
 import application.Main;
 import application.protocol.Message;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class Client {
-    private static final int DEFAULT_PORT = 9000 ;
-    private static final int FILE_PORT = 8000 ;
+    private static final int DEFAULT_PORT = 9000;
+    private static final int FILE_PORT = 8000;
 
     private final int port;
     private String name;
@@ -48,8 +49,21 @@ public class Client {
         }
     }
 
+    public void downloadFile(String pathRes) {
+        try {
+            FThread fThread = new FThread(this, pathRes, pathRes);
+            fThread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage(Message mess) {
         this.cThread.sendMessage(mess);
+    }
+
+    public void sendFile(File file) {
+        this.cThread.uploadFile(file, file.getName());
     }
 
     public void setName(String name) {

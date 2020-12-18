@@ -35,6 +35,7 @@ public class MQTT {
     public void sendMess(Message mess) {
         try {
             this.dataOutputStream.writeUTF(mess.getMessage());
+            System.out.println(mess.getMessage());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -45,6 +46,7 @@ public class MQTT {
         String mess = "";
         try {
             mess = dataInputStream.readUTF();
+            System.out.println(mess);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -52,10 +54,11 @@ public class MQTT {
         return new Message(mess);
     }
 
-    public int sendFile(String filePath) {
+    //    public int sendFile(String filePath) {
+    public int sendFile(File file) {
 
-        File file = new File(filePath);
-        if (!file.isFile()){
+//        File file = new File(filePath);
+        if (!file.isFile()) {
             System.out.println("File is not exist");
             return -1;
         }
@@ -67,7 +70,7 @@ public class MQTT {
         byte[] buffer = new byte[BUFFER_SIZE];
 
         try {
-            InputStream inputStream = new FileInputStream(filePath);
+            InputStream inputStream = new FileInputStream(file);
             while (dataRead < fileSize) {
                 if (fileSize - dataRead > (long) BUFFER_SIZE) {
                     dataRead += inputStream.read(buffer);
