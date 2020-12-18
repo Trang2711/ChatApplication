@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.util.Random;
+import java.util.UUID;
 
 public class Controller {
     public String name = "Main Controller";
@@ -40,8 +42,6 @@ public class Controller {
 //        appendFile("\nYou: " + textField.getText(), true);
         this.main.getClient().sendMessage(new Message("t", textField.getText()));
         textField.setText("");
-//        textChat.setText(textField.getText());
-//        client.hello();
     }
 
     @FXML
@@ -50,20 +50,33 @@ public class Controller {
         File file = fileChooser.showOpenDialog(this.main.getPrimaryStage());
         if (file != null) {
 //            System.out.println(file.getPath());
-            this.main.getClient().sendFile(file);
-            appendFile("\nYou: " + file.getName(), true);
-            this.main.getClient().sendMessage(new Message("f", file.getName()));
+            String uniqueID = createUniqueID();
+            this.main.getClient().sendFile(file, uniqueID);
+
+            appendFile("\nYou: " + file.getName(), uniqueID, true);
+            String fileName = file.getName();
+            this.main.getClient().sendMessage(new Message("f", fileName + "@.@" + uniqueID));
         }
     }
 
     @FXML
     public void joinRoom() {
+        this.main.getClient().sendMessage(new Message("c", "@bye@"));
+        resetScreen();
         this.main.showDialog(false);
     }
 
     @FXML
     public void createRoom() {
+        this.main.getClient().sendMessage(new Message("c", "@bye@"));
+        resetScreen();
         this.main.showDialog(true);
+    }
+
+    @FXML
+    public void quit() {
+        this.main.getClient().sendMessage(new Message("c", "@bye@"));
+        resetScreen();
     }
 
     public void appendChat(String mess, boolean doesUserSend) {
@@ -71,6 +84,7 @@ public class Controller {
         String sender = getSender(mess);
 
         Label label = new Label(getContent(mess));
+
         HBox hBox = new HBox();
 
         label.setWrapText(true);
@@ -105,11 +119,12 @@ public class Controller {
         this.curSender = sender;
     }
 
-    public void appendFile(String fileName, boolean doesUserSend) {
+    public void appendFile(String fileName, String fileID, boolean doesUserSend) {
         System.out.println("Head of appendFile");
         String sender = getSender(fileName);
 
         Label label = new Label(getContent(fileName));
+        label.setUserData(fileID);
         HBox hBox = new HBox();
 
         label.setUnderline(true);
@@ -146,19 +161,20 @@ public class Controller {
         this.curSender = sender;
         System.out.println("Done appendFile");
         label.setOnMouseClicked(mouseEvent -> {
-            getFile(label.getText());
+            getFile(label.getText(), label.getUserData().toString());
+//            System.out.println(label.getUserData());
         });
 
     }
 
-    public void getFile(String fileName) {
+    public void getFile(String fileName, String fileID) {
 //        System.out.println(fileName);
-        this.main.getClient().downloadFile(fileName);
+        this.main.getClient().downloadFile(fileName, fileID);
     }
 
     public void enableChat() {
 //        this.textChat.setText("");
-        this.textChat.setVisible(true);
+//        this.textChat.setVisible(true);
         this.textField.setDisable(false);
     }
 
@@ -171,9 +187,10 @@ public class Controller {
         return mess.replace(getSender(mess) + ": ", "");
     }
 
-    public void init() {
+    public void resetScreen() {
 //        this.textChat.setVisible(false);
-//        this.textField.setDisable(true);
+        this.textField.setDisable(true);
+        this.textChat.getChildren().clear();
 //        this.textField.getStyleClass().add("textInput2");
 //        this.chatContainer.setContent(this.textChat);
     }
@@ -181,4 +198,34 @@ public class Controller {
     public void setMain(Main main) {
         this.main = main;
     }
+
+    public String createFileName(String fileName, String userName) {
+
+        // handle user name
+        userName = userName.trim();
+
+        // ramdom a string id
+        Random generator = new Random();
+        String id = String.valueOf(generator.nextInt(1000000));
+
+        // handle file name: bai.tapTuan1.txt => bai.tapTuan1
+        String[] file_arr = fileName.split("\\.");
+
+        if (file_arr.length > 1) {
+            fileName = file_arr[0];
+            int j;
+            for (j = 1; j < file_arr.length - 1; j++) {
+                fileName = fileName + "." + file_arr[j];
+            }
+            return fileName + "_" + userName + "_" + id + "." + file_arr[j];
+        } else {
+            return fileName + "_" + userName + "_" + id;
+        }
+    }
+
+    public String createUniqueID() {
+        String uniqueID = UUID.randomUUID().toString();
+        return uniqueID;
+    }
+
 }

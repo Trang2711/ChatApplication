@@ -14,7 +14,7 @@
             <Font name="FreeMono Bold" size="32.0" />
          </font>
       </Label>
-      <Label alignment="CENTER" layoutX="113.0" layoutY="87.0" prefHeight="35.0" prefWidth="61.0" text="Port">
+      <Label alignment="CENTER" layoutX="113.0" layoutY="87.0" prefHeight="35.0" prefWidth="61.0" text="Host">
          <font>
             <Font name="Comic Sans MS" size="18.0" />
          </font>
@@ -24,7 +24,7 @@
             <Font name="Comic Sans MS" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="portInput" layoutX="113.0" layoutY="122.0" prefHeight="30.0" prefWidth="335.0" styleClass="textInput" stylesheets="@style.css">
+      <TextField fx:id="hostInput" layoutX="113.0" layoutY="122.0" prefHeight="30.0" prefWidth="335.0" styleClass="textInput" stylesheets="@style.css">
          <font>
             <Font name="Comic Sans MS" size="14.0" />
          </font>

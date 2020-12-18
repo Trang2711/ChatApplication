@@ -12,7 +12,7 @@ public class Client {
     private static final int DEFAULT_PORT = 9000;
     private static final int FILE_PORT = 8000;
 
-    private final int port;
+    private String hostName = null;
     private String name;
     private InetAddress host;
     private Socket connSock;
@@ -20,19 +20,23 @@ public class Client {
 
     private Main main;
 
-    public Client(int port, String name, Main main) {
-        this.port = port;
+    public Client(String hostName, String name, Main main) {
+        this.hostName = hostName;
         this.name = name;
         this.main = main;
     }
 
     public Client(String name, Main main) {
-        this(DEFAULT_PORT, name, main);
+        this.name = name;
+        this.main = main;
     }
 
     public void start() throws IOException {
         this.host = InetAddress.getLocalHost();
-        this.connSock = new Socket(host.getHostAddress(), port);
+        if (hostName != null)
+            this.connSock = new Socket(hostName, DEFAULT_PORT);
+        else
+            this.connSock = new Socket(host.getHostAddress(), DEFAULT_PORT);
 
         this.cThread = new CThread(this, connSock);
         Thread thread = new Thread(cThread);
@@ -49,9 +53,9 @@ public class Client {
         }
     }
 
-    public void downloadFile(String pathRes) {
+    public void downloadFile(String fileName, String fileID) {
         try {
-            FThread fThread = new FThread(this, pathRes, pathRes);
+            FThread fThread = new FThread(this, fileName, fileID);
             fThread.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,8 +66,8 @@ public class Client {
         this.cThread.sendMessage(mess);
     }
 
-    public void sendFile(File file) {
-        this.cThread.uploadFile(file, file.getName());
+    public void sendFile(File file, String fileID) {
+        this.cThread.uploadFile(file, fileID);
     }
 
     public void setName(String name) {

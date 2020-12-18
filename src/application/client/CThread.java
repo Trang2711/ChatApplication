@@ -132,15 +132,15 @@ public class CThread implements Runnable{
 
                 if(mess.getHeader().equals("t")) {
                     if (mess.getContent().equals("210 OK created")) {
-                        showAlert("Room created successfully!");
+                        showAlert("Room created successfully!", "Success");
                         client.getMain().enableChat();
                     } else if (mess.getContent().equals("400 Bad request")) {
-                        showAlert("Room already exists!");
+                        showAlert("Room already exists!", "Error");
                     } else if (mess.getContent().equals("210 OK joined")) {
-                        showAlert("Join room success!");
+                        showAlert("Join room success!", "Success");
                         client.getMain().enableChat();
                     } else if (mess.getContent().equals("410 Not Found")) {
-                        showAlert("Room not found!");
+                        showAlert("Room not found!", "Error");
                     } else {
                         appendChat(mess.getContent());
                     }
@@ -163,11 +163,11 @@ public class CThread implements Runnable{
 
     }
 
-    public void showAlert(String mess) {
+    public void showAlert(String mess, String status) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                client.getMain().showAlert(mess);
+                client.getMain().showAlert(mess, status);
             }
         });
     }
@@ -185,7 +185,8 @@ public class CThread implements Runnable{
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                client.getMain().appendFile(mess.getContent(), false);
+                String[] fileDetail = mess.getContent().split("@.@");
+                client.getMain().appendFile(fileDetail[0], fileDetail[1], false); // fileName-fileIDfi
             }
         });
     }

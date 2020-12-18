@@ -42,7 +42,7 @@ public class Main extends Application {
         loader.setLocation(Main.class.getResource("view/main.fxml"));
         Parent root = loader.load();
         this.controller = (Controller) loader.getController();
-        this.controller.init();
+        this.controller.resetScreen();
         this.controller.setMain(this);
         System.out.println(controller.name);
         Scene scene = new Scene(root);
@@ -55,13 +55,13 @@ public class Main extends Application {
 //        this.controller.appendFile(mess, doesUserSend);
     }
 
-    public void appendFile(String fileName, boolean doesUserSend) {
-        this.controller.appendFile(fileName, doesUserSend);
+    public void appendFile(String fileName, String fileID, boolean doesUserSend) {
+        this.controller.appendFile(fileName, fileID, doesUserSend);
     }
 
-    public void initClient(int port, String userName) {
-        if (port != 0)
-            this.client = new Client(port, userName, this);
+    public void initClient(String host, String userName) {
+        if (!host.equals(""))
+            this.client = new Client(host, userName, this);
         else
             this.client = new Client(userName, this);
 
@@ -70,15 +70,15 @@ public class Main extends Application {
             changeChatScene();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("IOException");
+            showAlert("IOException", "Error");
         }
     }
 
-    public void showAlert(String alertMess) {
+    public void showAlert(String alertMess, String status) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(alertMess);
-        alert.setHeaderText("Results:");
-        alert.setContentText("Connect to the database successfully!");
+        alert.setTitle(status);
+        alert.setHeaderText(alertMess);
+//        alert.setContentText();
 
         alert.showAndWait();
     }

@@ -15,17 +15,10 @@
             <Menu mnemonicParsing="false" text="Room">
                <items>
                   <MenuItem fx:id="buttonCreate" mnemonicParsing="false" onAction="#createRoom" text="New"/>
-                  <MenuItem fx:id="buttonJoin" mnemonicParsing="false" onAction="#joinRoom" text="Open…"/>
+                  <MenuItem fx:id="buttonJoin" mnemonicParsing="false" onAction="#joinRoom" text="Open"/>
                   <MenuItem fx:id="upload" mnemonicParsing="false" onAction="#sendFile" text="Upload File"/>
-                  <Menu mnemonicParsing="false" text="Open Recent"/>
-                  <SeparatorMenuItem mnemonicParsing="false"/>
-                  <MenuItem mnemonicParsing="false" text="Close"/>
-                  <MenuItem mnemonicParsing="false" text="Save"/>
-                  <MenuItem mnemonicParsing="false" text="Revert"/>
-                  <SeparatorMenuItem mnemonicParsing="false"/>
-                  <MenuItem mnemonicParsing="false" text="Preferences…"/>
-                  <SeparatorMenuItem mnemonicParsing="false"/>
-                  <MenuItem mnemonicParsing="false" text="Quit"/>
+
+                  <MenuItem fx:id="quit" mnemonicParsing="false" onAction="#quit" text="Quit"/>
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Game">

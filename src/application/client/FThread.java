@@ -13,15 +13,15 @@ public class FThread extends Thread {
     private final Socket socket;
     private boolean running = true;
     private MQTT mqtt;
-    private String pathRes, pathDes;
+    private String fileName, fileID;
 
-    public FThread(Client client, String pathRes, String pathDes) throws IOException {
+    public FThread(Client client, String fileName, String fileID) throws IOException {
         this.client = client;
         this.socket = new Socket(InetAddress.getLocalHost(), 8000);
         ;
         this.mqtt = new MQTT(this.socket);
-        this.pathRes = pathRes;
-        this.pathDes = pathDes;
+        this.fileName = fileName;
+        this.fileID = fileID;
     }
 
     @Override
@@ -40,13 +40,16 @@ public class FThread extends Thread {
             if (mqtt.receiveMess().getContent().equals("200 OK Download")) {
 
                 //send file path that saved on server
-                mqtt.sendMess(new Message("t", pathRes));
+                mqtt.sendMess(new Message("t", this.fileName + "@.@" + this.fileID));
+
+                //receive file name to server file
+                String fileName = mqtt.receiveMess().getContent();
 
                 //receive file size to server file
                 long fileSize = Long.parseLong(mqtt.receiveMess().getContent());
 
                 //receive content file
-                mqtt.receiveFile(pathDes, fileSize);
+                mqtt.receiveFile(fileName, fileSize);
 
                 String mess = mqtt.receiveMess().getContent();
                 if (mess.equals("210 Download Completed")) {
